@@ -38,7 +38,12 @@
     "freee",
     "GAFAM",
     "lockdown",
-    "amazonlinux"
+    "amazonlinux",
+    "terraform",
+    "terragrunt",
+    "tfstate",
+    "tfvars",
+    "newbits*"
   ],
   // 危険な単語リスト
   "flagWords": ["AKIA", "xoxb"],
