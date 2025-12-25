@@ -39,19 +39,19 @@ variable "cidrs_allowed" {
   default     = []
 }
 
-# EFSマウントターゲットの実IP(/32)をアウトバウンド許可に使用するかどうか（後段で有効化）
-# variable "use_efs_mt_ips" {
-#   description = "true の場合、EFSマウントターゲットの実IP(/32)をアウトバウンド許可に使用する"
-#   type        = bool
-#   default     = false
-# }
+# EFSマウントターゲットの実IP(/32)をアウトバウンド許可に使用するかどうか（デフォルト無効）
+variable "use_efs_mt_ips" {
+  description = "true の場合、EFSマウントターゲットの実IP(/32)をアウトバウンド許可に使用する"
+  type        = bool
+  default     = false
+}
 
-# EFSマウントターゲットのプライベートIP一覧（/32で使用）（後段で有効化）
-# variable "efs_mt_ips" {
-#   description = "EFSマウントターゲットのプライベートIP一覧（/32で使用）"
-#   type        = list(string)
-#   default     = []
-# }
+# EFSマウントターゲットのプライベートIP一覧（/32で使用）（デフォルト空）
+variable "efs_mt_ips" {
+  description = "EFSマウントターゲットのプライベートIP一覧（/32で使用）"
+  type        = list(string)
+  default     = []
+}
 
 # 共通タグ
 variable "tags" {
