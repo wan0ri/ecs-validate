@@ -1,0 +1,64 @@
+{
+  "version": "0.2",
+  // 言語設定
+  "language": "en",
+  // 無視するパス設定
+  "ignorePaths": [
+    "public/**",
+    "resources/**",
+    "themes/**",
+    "**/.hugo_cache/**",
+    "cspell.json",
+    ".vscode/cspell.json"
+  ],
+  // 単語リスト
+  "words": [
+    "lastmod",
+    "hidemeta",
+    "HLJS",
+    "Runbook",
+    "Hugo",
+    "PaperMod",
+    "frontmatter",
+    "Qiita",
+    "Zenn",
+    "pathlib",
+    "modelcontextprotocol",
+    "afplay",
+    "tfvars",
+    "Findy",
+    "LAPRAS",
+    "Forkwell",
+    "techsnap",
+    "TechSnap",
+    "mgmt",
+    "MTTA",
+    "MTTR",
+    "baprs",
+    "freee",
+    "GAFAM",
+    "lockdown",
+    "amazonlinux"
+  ],
+  // 危険な単語リスト
+  "flagWords": ["AKIA", "xoxb"],
+  // 正規表現による無視設定
+  "ignoreRegExpList": [
+    "/^---[\\s\\S]*?^---/m",
+    "/^\\+\\+\\+[\\s\\S]*?^\\+\\+\\+/m"
+  ],
+  // ファイルごとの上書き設定
+  "overrides": [
+    {
+      // マークダウンファイル向け設定
+      "filename": "**/*.md",
+      // マークダウンファイル内のコードブロックやインラインコードを無視
+      "ignoreRegExpList": [
+        "/^---[\\s\\S]*?^---/m",
+        "/^\\+\\+\\+[\\s\\S]*?^\\+\\+\\+/m",
+        "/```[\\s\\S]*?```/",
+        "/`[^`]*`/"
+      ]
+    }
+  ]
+}
