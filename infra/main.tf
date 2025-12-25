@@ -25,14 +25,15 @@ module "security" {
   tags = var.tags
 }
 
-# EFS モジュールの呼び出し（後段で有効化）
-# module "efs" {
-#   source = "./modules/efs"
-#   subnet_a_id = module.network.subnet_a_id
-#   subnet_c_id = module.network.subnet_c_id
-#   efs_sg_id   = module.security.efs_sg_id
-#   tags        = var.tags
-# }
+# EFS モジュールの呼び出し（段階適用: まず/28のまま）
+module "efs" {
+  source = "./modules/efs"
+  subnet_a_id = module.network.subnet_a_id
+  subnet_c_id = module.network.subnet_c_id
+  efs_sg_id   = module.security.efs_sg_id
+  tags        = var.tags
+}
 
-# 日本語コメント: /32 への切替は、EFSを結線後に module "security" へ
-# use_efs_mt_ips = true と efs_mt_ips = module.efs.mount_target_ips を追記して再適用します。
+# 日本語コメント: /32 への切替は次段で module "security" に以下を追記して再適用します。
+# use_efs_mt_ips = true
+# efs_mt_ips     = module.efs.mount_target_ips
