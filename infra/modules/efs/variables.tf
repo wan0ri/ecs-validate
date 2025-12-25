@@ -25,6 +25,13 @@ variable "tags" {
   default     = {}
 }
 
+# モジュールの有効/無効（段階適用のためのフラグ）
+variable "enabled" {
+  description = "このモジュールを有効化するか"
+  type        = bool
+  default     = true
+}
+
 # アクセスポイントの有無（検証では1つ作成）
 variable "ap_enabled" {
   description = "アクセスポイントを作成するかどうか"

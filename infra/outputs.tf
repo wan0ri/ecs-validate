@@ -25,23 +25,23 @@ output "subnet_c_cidr" {
 # ECS タスク用 SG ID
 output "ecs_sg_id" {
   description = "ECS タスク用 SG ID"
-  value       = module.security.ecs_sg_id
+  value       = var.enable_security ? module.security[0].ecs_sg_id : null
 }
 
 # EFS 用 SG ID
 output "efs_sg_id" {
   description = "EFS 用 SG ID"
-  value       = module.security.efs_sg_id
+  value       = var.enable_security ? module.security[0].efs_sg_id : null
 }
 
 # EFS ファイルシステムID
 output "efs_id" {
   description = "EFS ファイルシステムID"
-  value       = module.efs.efs_id
+  value       = var.enable_efs ? module.efs[0].efs_id : null
 }
 
 # EFS マウントターゲットのプライベートIP一覧
 output "efs_mount_target_ips" {
   description = "EFS マウントターゲットのプライベートIP一覧"
-  value       = module.efs.mount_target_ips
+  value       = var.enable_efs ? module.efs[0].mount_target_ips : []
 }
