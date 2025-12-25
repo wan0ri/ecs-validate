@@ -1,3 +1,10 @@
+# 有効/無効（段階適用のためのフラグ）
+variable "enabled" {
+  description = "このモジュールを有効化するか"
+  type        = bool
+  default     = true
+}
+
 # VPC ID
 variable "vpc_id" {
   description = "VPC ID"

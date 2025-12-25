@@ -9,6 +9,7 @@ module "network" {
 
 # SG はネットワーク検出結果を受けて作成（段階構築）
 module "security" {
+  count  = var.enable_security ? 1 : 0
   source = "./modules/security"
 
   vpc_id        = module.network.vpc_id
@@ -22,18 +23,27 @@ module "security" {
   # 手動で明示する場合は以下を使う（例）
   // cidrs_allowed = ["10.0.0.0/28"]
 
-  tags = var.tags
+  tags    = var.tags
 }
 
 # EFS モジュールの呼び出し（段階適用: まず/28のまま）
 module "efs" {
-  source = "./modules/efs"
+  count       = var.enable_efs ? 1 : 0
+  source      = "./modules/efs"
   subnet_a_id = module.network.subnet_a_id
   subnet_c_id = module.network.subnet_c_id
-  efs_sg_id   = module.security.efs_sg_id
+  # security モジュールは count 化しているため配列参照に変更
+  efs_sg_id   = module.security[0].efs_sg_id
   tags        = var.tags
 }
 
-# 日本語コメント: /32 への切替は次段で module "security" に以下を追記して再適用します。
-# use_efs_mt_ips = true
-# efs_mt_ips     = module.efs.mount_target_ips
+# 既存のモジュールアドレスを count 付きの新アドレスへ移行
+moved {
+  from = module.security
+  to   = module.security[0]
+}
+
+moved {
+  from = module.efs
+  to   = module.efs[0]
+}
