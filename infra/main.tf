@@ -23,7 +23,7 @@ module "security" {
   # 手動で明示する場合は以下を使う（例）
   // cidrs_allowed = ["10.0.0.0/28"]
 
-  tags    = var.tags
+  tags = var.tags
 }
 
 # EFS モジュールの呼び出し（段階適用: まず/28のまま）
@@ -33,8 +33,8 @@ module "efs" {
   subnet_a_id = module.network.subnet_a_id
   subnet_c_id = module.network.subnet_c_id
   # security モジュールは count 化しているため配列参照に変更
-  efs_sg_id   = module.security[0].efs_sg_id
-  tags        = var.tags
+  efs_sg_id = module.security[0].efs_sg_id
+  tags      = var.tags
 }
 
 # 既存のモジュールアドレスを count 付きの新アドレスへ移行
@@ -46,4 +46,13 @@ moved {
 moved {
   from = module.efs
   to   = module.efs[0]
+}
+
+# IAM（タスク実行ロール）モジュールの呼び出し（トグルで制御）
+module "iam" {
+  count  = var.enable_iam ? 1 : 0
+  source = "./modules/iam"
+
+  role_name = "ecsTaskExecutionRole-ecs-validate"
+  tags      = var.tags
 }

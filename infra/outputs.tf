@@ -45,3 +45,14 @@ output "efs_mount_target_ips" {
   description = "EFS マウントターゲットのプライベートIP一覧"
   value       = var.enable_efs ? module.efs[0].mount_target_ips : []
 }
+
+# タスク実行ロール（有効時のみ）
+output "task_execution_role_arn" {
+  description = "ECS タスク実行ロールの ARN"
+  value       = var.enable_iam ? module.iam[0].task_execution_role_arn : null
+}
+
+output "task_execution_role_name" {
+  description = "ECS タスク実行ロールの名前"
+  value       = var.enable_iam ? module.iam[0].task_execution_role_name : null
+}
