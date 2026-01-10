@@ -4,6 +4,7 @@
 *.tfstate.backup
 .terraform.lock.hcl
 *.tfvars
+*.plan
 
 # docs
 task.md
