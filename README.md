@@ -185,3 +185,87 @@ repo/
 
 - 同一 AZ 内の EFS 通信はデータ転送料がかからない前提が多いが、最新の料金・条件を要確認。
 - 実運用では ECR プッシュや CI/CD 実行分の費用、NAT 等の付帯費用が発生し得ます。
+
+---
+
+## IAM Identity Center ログイン手順（検証用ユーザー）
+
+このリポジトリの検証作業（AWS コンソール操作・CLI/Terraform 実行）に必要な、IAM Identity Center（旧 AWS SSO）のログイン手順をまとめます。
+
+### 前提情報の確認
+
+- ユーザーポータル URL（例）: `https://<alias または d-xxxxxxxxxx>.awsapps.com/start`
+- 有効化リージョン（例）: `ap-northeast-1`（Identity Center の有効化リージョン）
+- 検証用ユーザーのメールアドレス/ユーザー名（内部ディレクトリの場合はパスワード設定済みであること）
+
+ユーザーポータル URL は、AWS マネジメントコンソール → IAM Identity Center → 設定 → AWS アクセスポータル で確認できます。
+
+### コンソール（ブラウザ）でのログイン
+
+1. ユーザーポータル URL にアクセスします。
+2. 表示に従ってサインインします（外部 IdP 利用時は自動リダイレクト）。
+3. サインイン後、「AWS アカウント」から対象アカウント/ロールの「Management console」をクリックすると、AWS コンソールへ遷移します。
+
+### CLI（AWS CLI v2）でのログイン
+
+初回設定（プロファイル作成）
+
+```bash
+aws configure sso
+# プロンプト例：
+# SSO session name (Recommended): <任意の名前>
+# SSO start URL [None]: https://<alias or d-xxxxxxxxxx>.awsapps.com/start
+# SSO region [None]: ap-northeast-1   # 例（実環境に合わせて入力）
+# CLI default client Region [None]: ap-northeast-1
+# CLI default output format [None]: json
+# 登録されたアカウント/ロールから対象を選択 → プロファイル名を入力
+```
+
+ログイン実行と確認
+
+```bash
+aws sso login --profile <profile-name>
+aws sts get-caller-identity --profile <profile-name>
+```
+
+以後、毎回 `--profile` を付与するか、環境変数で固定します。
+
+```bash
+export AWS_PROFILE=<profile-name>
+export AWS_REGION=ap-northeast-1   # 例：東京リージョン
+aws sts get-caller-identity
+```
+
+セッションが切れた場合の再ログイン
+
+```bash
+aws sso login --profile <profile-name>
+```
+
+### Terraform での利用（例）
+
+このリポジトリの `infra/` を適用する際は、上記の CLI ログインを済ませた上で、`AWS_PROFILE` を指定して実行します。
+
+```bash
+cd infra
+export AWS_PROFILE=<profile-name>
+export AWS_REGION=ap-northeast-1               # 例
+terraform init -upgrade
+terraform plan  -var-file=envs/dev.tfvars
+terraform apply -var-file=envs/dev.tfvars
+```
+
+### よくあるエラーと対処
+
+- `The SSO session associated with this profile has expired` などの期限切れ:
+  - `aws sso login --profile <profile-name>` を再実行。
+- `SSO session not found` やプロファイル解決失敗:
+  - `~/.aws/config` の該当プロファイルに `sso_start_url`/`sso_region`/`sso_account_id`/`sso_role_name`（または `sso_session` 参照）があるか確認。なければ `aws configure sso` で作成し直し。
+- リージョン未指定エラー:
+  - `--region` を付与、または `AWS_REGION`/`AWS_DEFAULT_REGION` をエクスポート。
+
+### メモ（ブラウザで見た完了メッセージ）
+
+CLI ログインフロー中にブラウザで以下のメッセージが表示されたら、認証情報の共有は成功しています。そのタブは閉じて問題ありません。
+
+> Your credentials have been shared successfully and can be used until your session expires. You can now close this tab.
