@@ -56,3 +56,9 @@ output "task_execution_role_name" {
   description = "ECS タスク実行ロールの名前"
   value       = var.enable_iam ? module.iam[0].task_execution_role_name : null
 }
+
+# CloudWatch Logs グループ名（有効時のみ）
+output "logs_group_name" {
+  description = "CloudWatch Logs グループ名"
+  value       = var.enable_logs ? module.logs[0].log_group_name : null
+}

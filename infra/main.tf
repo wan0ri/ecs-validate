@@ -56,3 +56,14 @@ module "iam" {
   role_name = "ecsTaskExecutionRole-ecs-validate"
   tags      = var.tags
 }
+
+# CloudWatchlogs モジュールの呼び出し
+module "logs" {
+
+  count  = var.enable_logs ? 1 : 0
+  source = "./modules/logs"
+
+  name              = "/ecs/ecs-validate"
+  retention_in_days = 1
+  tags              = var.tags
+}
