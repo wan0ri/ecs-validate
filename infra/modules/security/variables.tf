@@ -60,6 +60,13 @@ variable "efs_mt_ips" {
   default     = []
 }
 
+# CloudWatch Logs/ECR等への最小到達性(HTTPS)を許可するか
+variable "allow_https_egress" {
+  description = "true の場合、443/TCP のアウトバウンド(0.0.0.0/0)を追加許可"
+  type        = bool
+  default     = true
+}
+
 # 共通タグ
 variable "tags" {
   description = "共通タグ"

@@ -11,3 +11,17 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# タスクロール名（アプリ用）
+variable "task_role_name" {
+  description = "ECS タスクロール名（タスクが取得する認可）"
+  type        = string
+  default     = "ecsTaskRole-ecs-validate"
+}
+
+# EFS アクセスポイント ARN（EFS IAM 認可の条件に利用）
+variable "efs_access_point_arn" {
+  description = "EFS Access Point ARN（ポリシー条件に使用、無ければスキップ）"
+  type        = string
+  default     = null
+}

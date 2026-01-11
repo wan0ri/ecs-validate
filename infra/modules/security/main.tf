@@ -45,6 +45,18 @@ resource "aws_security_group" "ecs" {
   tags = merge({ Name = "ecs-sg" }, var.tags)
 }
 
+# CloudWatch Logs/ECR 等のための最小HTTPSアウトバウンド（ロックダウン時でも許可）
+resource "aws_security_group_rule" "ecs_egress_https" {
+  count             = var.enabled && var.allow_https_egress ? 1 : 0
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ecs[0].id
+  description       = "Allow HTTPS egress for AWS APIs (CloudWatch Logs/ECR)"
+}
+
 # lockdown=true の場合のみ、2049/TCP を狭いCIDRへ許可
 resource "aws_security_group_rule" "ecs_egress_efs_2049" {
   for_each          = var.enabled && var.lockdown_mode && !var.use_efs_mt_ips ? toset(local.egress_cidrs) : toset([])
