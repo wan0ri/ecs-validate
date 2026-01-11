@@ -25,6 +25,10 @@ module "security" {
   # 手動で明示する場合は以下を使う（例）
   // cidrs_allowed = ["10.0.0.0/28"]
 
+  use_efs_mt_ips = true
+
+  efs_mt_ips = module.efs[0].mount_target_ips
+
   tags = var.tags
 }
 
