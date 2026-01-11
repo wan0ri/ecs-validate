@@ -113,3 +113,52 @@ terraform apply -var-file=envs/dev.tfvars
 ### メモ（ブラウザで見た完了メッセージ）
 
 CLI ログインフロー中にブラウザで以下のメッセージが表示されたら、認証情報の共有は成功しています。そのタブは閉じて問題ありません。
+> Your credentials have been shared successfully and can be used until your session expires. You can now close this tab.
+
+## 撤収（Destroy）
+
+最小コストで安全に撤収するための手順です。ECS を停止してから順に破壊します。
+
+事前に環境変数を設定:
+
+```bash
+export AWS_PROFILE=wan0ri-admin
+export AWS_REGION=ap-northeast-1
+cd infra
+```
+
+1) まずサービスを停止（desired_count=0）:
+
+```bash
+aws ecs update-service --cluster ecs-validate --service ap-repro --desired-count 0
+aws ecs wait services-stable --cluster ecs-validate --services ap-repro
+```
+
+2) Terraform で段階的に破壊（安全手順）:
+
+```bash
+# ECS（Service → TaskDef → Cluster）
+terraform destroy -var-file=envs/dev.tfvars -target=module.ecs_service
+terraform destroy -var-file=envs/dev.tfvars -target=module.ecs_task_definition
+terraform destroy -var-file=envs/dev.tfvars -target=module.ecs_cluster
+
+# EFS（AP/MT含む）
+terraform destroy -var-file=envs/dev.tfvars -target=module.efs
+
+# Security（SG）
+terraform destroy -var-file=envs/dev.tfvars -target=module.security
+
+# Logs / IAM（任意）
+terraform destroy -var-file=envs/dev.tfvars -target=module.logs
+terraform destroy -var-file=envs/dev.tfvars -target=module.iam
+```
+
+3) まとめて一括で撤収したい場合（問題なければ）:
+
+```bash
+terraform destroy -var-file=envs/dev.tfvars
+```
+
+注意:
+- EFS が使用中だと削除に失敗します。ECS タスク/サービスが停止していることを確認してください。
+- `-target` は依存の都合で一時的に使うためのオプションです。状況が安定していれば一括 destroy を推奨します。
